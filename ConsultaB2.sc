@@ -1,3 +1,14 @@
+// ¿Que es la programacion reaciva?
+/**
+ * La Programación Funcional Reactiva (FRP) permite aplicar principios de la
+ * programación funcional moderna en sistemas reactivos al modelar entradas y salidas como señales que varían en el tiempo.
+ * La FRP simplifica la simulación de leyes físicas, como ecuaciones diferenciales, en sistemas grandes, como videojuegos.
+ * La aproximación funcional facilita la paralelización y distribución del sistema, ya que los datos funcionales puros
+ * evitan interferencias entre nodos de procesamiento de señales en una red FRP.
+ * En resumen, la FRP, combinada con la programación funcional,ofrece beneficios en modularidad,
+ * abstracción y facilidad para la paralelización en sistemas reactivos.
+ */
+
 //¿que es un manifiesto reactivo?
 /**
 // Los sistemas reactivos, tal como se describen en el Manifiesto Reactivoson sistemas
@@ -43,13 +54,33 @@ el código del sujeto a menudo no revela qué observadores están siendo notific
  * Si bien no forman parte de la especificación Reactive Streams,
  * todas las librerías que la implementan los soportan de manera completamente compatible.
 */
-// ¿Que es la programacion reaciva?
-/**
- * La Programación Funcional Reactiva (FRP) permite aplicar principios de la
- * programación funcional moderna en sistemas reactivos al modelar entradas y salidas como señales que varían en el tiempo.
- * La FRP simplifica la simulación de leyes físicas, como ecuaciones diferenciales, en sistemas grandes, como videojuegos.
- * La aproximación funcional facilita la paralelización y distribución del sistema, ya que los datos funcionales puros
- * evitan interferencias entre nodos de procesamiento de señales en una red FRP.
- * En resumen, la FRP, combinada con la programación funcional,ofrece beneficios en modularidad,
- * abstracción y facilidad para la paralelización en sistemas reactivos.
-*/
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.util.{Failure, Success}
+
+class Escalabilidad {
+
+  // Contador de tareas
+  var contadorTareas = 0
+
+  // Ejemplo simple de escalabilidad
+  def tareaEscalable(numero: Int): Future[Int] = Future {
+    contadorTareas += 1
+    val resultado = numero * 2
+    println(s"Tarea $contadorTareas completada. Resultado: $resultado")
+    resultado
+  }
+
+  // Crear una secuencia de 10 tareas escalables
+  val tareasEscalables = (1 to 10).map(tareaEscalable)
+
+  // Esperar a que todas las tareas se completen
+  val resultadosFuturos: Future[Seq[Int]] = Future.sequence(tareasEscalables)
+
+  // Manejar el resultado cuando todas las tareas se completen
+  resultadosFuturos.onComplete {
+    case Success(resultados) => println(s"Resultados finales: $resultados")
+    case Failure(ex) => println(s"Error: $ex")
+  }
+
+}
